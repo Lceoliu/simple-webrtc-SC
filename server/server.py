@@ -25,12 +25,12 @@ import datetime
 
 BASE_PATH = os.path.dirname(os.path.abspath(__file__))
 
-logging.basicConfig(
-    level=logging.DEBUG,
-    format="%(asctime)s - %(message)s",
-    filename="server.log",
-    filemode="w",
-)
+# logging.basicConfig(
+#     level=logging.DEBUG,
+#     format="%(asctime)s - %(message)s",
+#     filename="server.log",
+#     filemode="w",
+# )
 
 
 @dataclass
@@ -222,7 +222,8 @@ class Port:
         计算当前端口的平均bps
         '''
         avg_bps = 0
-
+        if len(self.clients) == 0:
+            return 0
         for c in self.clients:
             pc = c.pc
             bps = await self.get_current_bitrate(pc)
@@ -266,9 +267,9 @@ class Server:
         logging.debug("Server started")
 
     async def open_browser(self):
-        if not self.host:
-            raise ValueError("Host is not set")
-        webbrowser.open("http://" + self.host + ":" + str(self.control_port))
+        # if not self.host:
+        #     raise ValueError("Host is not set")
+        webbrowser.open("http://127.0.0.1:" + str(self.control_port))
 
     async def index(self, request: web.Request):
         '''
@@ -294,7 +295,7 @@ class Server:
         目前默认的请求是空的get请求
         '''
         try:
-            logging.debug(f"Handling initial offer from {request.remote}")
+            print(f"Handling initial offer from {request.remote}")
             least_loaded_port = await self.get_least_loaded_port()
 
             if least_loaded_port is None:
@@ -306,7 +307,7 @@ class Server:
                 assert new_port_num in self.ports.keys()
 
                 new_port = self.ports[new_port_num]
-                await new_port.start()
+                await new_port.start(host=self.host)
 
                 least_loaded_port = new_port
             # 返回给client一个port的编号
@@ -365,7 +366,7 @@ class Server:
 
 async def main():
     server = Server(max_port_clients=5)
-    await server.start()
+    await server.start(host='0.0.0.0')
     await server.open_browser()
     print(f"Server started on {server.site.name}")
 

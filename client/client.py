@@ -105,13 +105,13 @@ async def log_rtc_stat(pc: RTCPeerConnection):
 
 
 if __name__ == "__main__":
-    # import argparse
+    import argparse
 
-    # parser = argparse.ArgumentParser(description="WebRTC video client")
-    # parser.add_argument("server_ip", help="The IP address of the WebRTC server")
-    # args = parser.parse_args()
-    # server_ip = args.server_ip
-    server_ip = "127.0.0.1"
+    parser = argparse.ArgumentParser(description="WebRTC video client")
+    parser.add_argument("server_ip", help="The IP address of the WebRTC server")
+    args = parser.parse_args()
+    server_ip = args.server_ip
+    # server_ip = "127.0.0.1"
     pc = RTCPeerConnection()
 
     loop = asyncio.get_event_loop()
